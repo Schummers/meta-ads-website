@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Manual-design responsive shell. The content stays a single column whose inner
+   width matches `max-w-xl px-6` exactly (36rem max-width − 2×1.5rem gutters =
+   33rem of content), so full-bleed bands line up edge-for-edge with the normal
+   sections. `.ya-bleed` lets a section background span the full viewport while
+   its content stays on that same column. */
+:root {
+  --ya-shell: 33rem;
+}
+.ya-bleed {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  padding-inline: max(1.5rem, calc(50vw - var(--ya-shell) / 2));
+}
