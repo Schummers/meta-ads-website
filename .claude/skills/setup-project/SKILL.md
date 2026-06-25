@@ -1,69 +1,63 @@
 ---
 name: setup-project
-description: Use when starting a new fake-door landing test from the fakedoor-kit template, or when the user says "setup project", "/setup-project", "new project", "define the content", or wants to go from a product idea to a live landing page. Interviews the user, writes the canonical content, then hands off to the design and ship steps in ROADMAP.md.
+description: Use when starting a new fake-door landing test from the fakedoor-kit template, or when the user says "setup project", "/setup-project", "new project", "set up my project", "define the content", or wants to go from a product idea to a live landing page. The agent does all the work (install, build, deploy); the human only answers questions and pastes API keys.
 ---
 
 # setup-project
 
 Drive a fresh `fakedoor-kit` clone from a product idea to a content-complete,
-buildable landing page, then hand off to design generation. This is the guided
-entry point referenced by ROADMAP.md.
+shippable landing test. **You (the agent) execute every command and edit.** The
+human is possibly non-technical: ask them questions, never tell them to run
+commands. Work the phases IN ORDER; make a todo per phase.
 
-## How to run it
-
-Work through the phases IN ORDER. Create a todo per phase. Ask the interview
-questions in small batches (the user may brain-dump answers). Do not write code
-until Phase 2.
-
-### Phase 0 — Orient
-1. Confirm you're in a fakedoor-kit clone (CLAUDE.md + `src/content/site.ts` exist).
-2. Read `src/content/site.ts` (the `SiteContent` shape you must fill) and
+### Phase 0 — Bootstrap (do it, don't ask)
+1. `npm install`.
+2. Read `src/content/site.ts` (the `SiteContent` shape you fill) and
    `src/designs/example/index.tsx` (the contract every design honours).
-3. Tell the user the plan: interview → write content → connect keys → generate
-   designs → pick → ship. Point them at ROADMAP.md.
+3. Ensure a design skill is available. If `design-taste-frontend` or
+   `frontend-design` is not present, install one now per
+   `docs/setup/design-skills.md` (it has the GitHub link + commands).
+4. `cp .env.example .env.local` if missing. `npm run build` then `npm run dev`.
+5. Tell the human the plan in plain language: "I'll ask about your idea, build
+   the page, then help you connect a few accounts and ship it."
 
-### Phase 1 — Interview (no code yet)
-Ask, in batches, enough to write honest copy. Cover:
-- **Product**: what is it, in one sentence? What stage (idea / prototype)?
-- **Audience**: who exactly is it for? What do they call their problem?
+### Phase 1 — Interview (no content written yet)
+Ask in small batches; let them brain-dump. Cover:
+- **Product**: what is it, one sentence? Stage (idea / prototype)?
+- **Audience**: who exactly, and what do they call their problem?
 - **Pain**: the status quo that hurts, the cost of doing nothing.
-- **Promise**: the single transformation the product delivers.
-- **How it works**: 3 steps, each an action + payoff.
-- **Offer**: price(s), what's included, the CTA verb (e.g. "Get early access").
-- **Proof**: 3 short testimonial-style quotes (can be aspirational placeholders
-  the user will replace).
+- **Promise**: the single transformation delivered.
+- **How it works**: 3 steps (action + payoff each).
+- **Offer**: price(s), what's included, the CTA verb ("Get early access").
+- **Proof**: 3 short testimonial-style quotes (aspirational placeholders OK).
 - **Objections**: 3-4 FAQ questions real visitors would ask.
-- **Fake-door**: the waitlist promise (e.g. "first access + discount at launch")
-  and 4-8 features to let them rank (optional).
-- **Tone**: warm / clinical / playful / premium? Any words to use or avoid?
-
-Reflect a short summary back and get a thumbs-up before writing.
+- **Fake-door**: the waitlist promise + 4-8 features to rank (optional).
+- **Tone**: warm / clinical / playful / premium? Words to use or avoid?
+Reflect a short summary back; get a thumbs-up before writing.
 
 ### Phase 2 — Write the content
-1. Rewrite `src/content/site.ts` `site` object from the answers. Keep the
-   `SiteContent` type intact; fill every field with real copy (no placeholders).
-2. Update the page `<title>`/description in `src/app/layout.tsx` only if it
-   shouldn't just read `NEXT_PUBLIC_PROJECT_NAME`.
-3. Run `npm run build`. Fix any type error. Then `npm run dev` and read the
-   landing (the `example` design now shows the real words).
-4. Iterate wording with the user until it sounds like them.
+1. Rewrite the `site` object in `src/content/site.ts` from the answers. Keep the
+   `SiteContent` type; fill every field with real copy (no placeholders).
+2. `npm run build`, fix any type error, `npm run dev`, re-read the landing with
+   the human, iterate wording until it sounds like them.
 
-### Phase 3 — Connect services (hand to ROADMAP step 2)
-Walk the user through `.env.local` (PostHog token, Meta Pixel + CAPI token,
-Notion token + DB id, `NEXT_PUBLIC_PROJECT_NAME`). Remind them the funnel works
-for QA without keys; leads just aren't stored. Do NOT ask for secrets in chat —
-have them paste into `.env.local` themselves.
+### Phase 3 — Connect services (you guide, human pastes keys)
+Follow `docs/setup/services.md` (PostHog, Meta Pixel + CAPI, Notion + the EXACT
+DB schema, `NEXT_PUBLIC_PROJECT_NAME`). Never ask for secrets in chat — have them
+paste into `.env.local`. Remind them the funnel works for QA without keys.
 
-### Phase 4 — Generate designs (hand off)
-Stop here and invoke the design skill: prefer `design-taste-frontend`, else
-`frontend-design`. Brief: several distinct directions, a few iterations each,
-each a new folder in `src/designs/` + a `registry.ts` entry, rendering all
-content and wiring `useFakeDoor` (point them at `example`). Browse at `/gallery`.
+### Phase 4 — Generate designs
+Use the design skill from Phase 0 (`design-taste-frontend` preferred). Brief:
+several distinct directions, a few iterations each; each a new folder in
+`src/designs/` + a `registry.ts` entry, rendering all content and wiring
+`useFakeDoor` (point at `example`). Browse `/gallery`; the human ♥/🗑, you delete
+the trashed slugs and re-build. If no design skill is reachable, generate designs
+by prompting directly — the only hard requirement is the `example` contract.
 
-### Phase 5 — Pick & ship (hand to ROADMAP steps 4-6)
-Help pick finalists, refine, point `src/app/page.tsx` (or `/a /b /c` routes) at
-them, deploy to Vercel, set env vars there, exclude own traffic with
-`?internal=1`, launch ads, read PostHog/Meta/Notion.
+### Phase 5 — Pick & ship
+Help pick finalists, refine, point `src/app/page.tsx` (or add `/a /b /c` routes)
+at them, deploy to Vercel + set env vars there, exclude own traffic with
+`?internal=1`, then the human launches ads. See ROADMAP Phases 5-6.
 
 ## Rules
 - Content lives ONLY in `src/content/site.ts`. Never hardcode copy in a design.

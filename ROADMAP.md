@@ -1,58 +1,55 @@
 # Roadmap — from idea to a live fake-door test
 
-Follow this top to bottom. Each step says what to do and who does it. When in
-doubt, open the repo in Claude Code and run `/setup-project` — it drives steps 1-5.
+**This is the agent's execution plan.** The agent runs every command and edit.
+The human only does two things: **answer the interview (Phase 1)** and **paste API
+keys into `.env.local` (Phase 3)**. Everything else is the agent's job. The
+`setup-project` skill drives Phases 0-5.
 
-## 0. Create the project (once)
-- [ ] On GitHub, click **Use this template** on `fakedoor-kit` → new repo for your idea.
-- [ ] `git clone` it, `npm install`, `npm run dev`. You should see the example page.
+## Phase 0 — Bootstrap (agent, on a fresh clone)
+- [ ] `npm install`.
+- [ ] Ensure a design skill is installed (`docs/setup/design-skills.md`).
+- [ ] `cp .env.example .env.local` if missing.
+- [ ] `npm run build` then `npm run dev` — the example page should render.
 
-## 1. Define the offer and content (agent-guided)
-- [ ] Run `/setup-project`. Answer the interview: who it's for, the pain, the
-      promise, the offer/price, 3 proof points, the FAQ objections.
-- [ ] It rewrites `src/content/site.ts` and the page `<title>`. Re-read the
-      landing and tweak wording until it sounds like you.
+## Phase 1 — Define the offer and content (agent interviews the human)
+- [ ] Run the interview (product, audience, pain, promise, 3 steps, offer/price,
+      3 proof quotes, FAQ objections, waitlist promise, tone).
+- [ ] Rewrite `src/content/site.ts` from the answers; update the page title.
+- [ ] Re-read the landing with the human; tweak wording until it sounds like them.
 
-## 2. Connect the services (one-time keys)
-- [ ] `cp .env.example .env.local` and fill:
-  - `NEXT_PUBLIC_PROJECT_NAME` — your product name (also the Notion "Project" tag).
-  - **PostHog**: `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` (EU). Create a project at eu.posthog.com.
-  - **Meta**: `NEXT_PUBLIC_META_PIXEL_ID` + `META_ACCESS_TOKEN` from the ad
-    account that will run the campaign (one Pixel per project).
-  - **Notion**: `NOTION_TOKEN` + `NOTION_DATABASE_ID`. The DB needs at least an
-    `Email` (title) and `Project` (select) column; optional columns are listed
-    in `src/app/api/waitlist/route.ts`.
-- [ ] Without these, the funnel still works for QA (leads just aren't stored).
+## Phase 2 — Generate design variants (agent)
+- [ ] Use the design skill (`design-taste-frontend` preferred, else
+      `frontend-design`, else prompt directly).
+- [ ] Several distinct directions, a few iterations each. Each = a new folder in
+      `src/designs/` + a `registry.ts` entry, rendering all content and wiring
+      `useFakeDoor` (copy `src/designs/example/` as the contract).
+- [ ] Show the human `/gallery`. They ♥ keepers / 🗑 rejects; agent deletes the
+      marked slugs and confirms `npm run build` passes.
 
-## 3. Generate design variants (agent-guided)
-- [ ] Ask the agent to generate designs with `design-taste-frontend` (or
-      `frontend-design`). Make several variants, a few iterations each.
-- [ ] Each design is a folder in `src/designs/` + one entry in `registry.ts`.
-      It must render every content section and wire `useFakeDoor` (copy the
-      `example` design as the contract).
-- [ ] Browse them all at `/gallery`. ♥ the keepers, 🗑 the rejects, then have the
-      agent delete the marked slugs.
+## Phase 3 — Connect services (agent guides, human pastes keys)
+- [ ] Follow `docs/setup/services.md`: PostHog token, Meta Pixel + CAPI token,
+      Notion token + **DB with the exact schema in that doc**, `NEXT_PUBLIC_PROJECT_NAME`.
+- [ ] Without keys the funnel still works for QA (leads not stored), so this can
+      happen after designs exist.
 
-## 4. Pick finalists and refine
-- [ ] Choose 1-3 designs. Refine them by hand with the agent until you're happy.
+## Phase 4 — Pick finalists & refine (agent + human)
+- [ ] Choose 1-3 designs. Refine by hand with the agent until the human is happy.
 
-## 5. Ship to ads
-- [ ] Point `src/app/page.tsx` at your finalist slug. To A/B/C-test several from
-      ads, create `src/app/a/`, `/b`, `/c` routes that each set a different
-      `SLUG` (the example route pattern is one line — ask the agent).
-- [ ] Deploy to Vercel. Set the same env vars in the Vercel project.
-- [ ] Visit your live URL with `?internal=1` once to exclude yourself from tracking.
-- [ ] Launch the ad campaign pointing at the live URL(s) with UTM params.
+## Phase 5 — Ship to ads (agent)
+- [ ] Point `src/app/page.tsx` at the finalist slug. For an A/B/C ad test, add
+      `src/app/a/`, `/b`, `/c` routes that each set a different `SLUG`.
+- [ ] Deploy to Vercel + set env vars there (`docs/setup/services.md`).
+- [ ] Human visits the live URL once with `?internal=1` to exclude their traffic.
+- [ ] Launch the ad campaign at the live URL(s) with UTM params.
 
-## 6. Read the results
-- [ ] PostHog: funnel (pageview → cta_click → pricing_view → email_submit).
-- [ ] Meta Events Manager: Pixel + CAPI conversions.
-- [ ] Notion: the leads, segmented by Variant and Project.
+## Phase 6 — Read results (human, agent can pull data)
+- [ ] PostHog funnel: `$pageview` → `cta_click` → `pricing_view` → `email_submit`.
+- [ ] Meta Events Manager: Pixel + CAPI conversions. Notion: leads by Variant/Project.
 - [ ] Decide: enough demand to build, or kill the idea cheaply.
 
 ---
 
 ### Events reference
 `$pageview` · `design_viewed` · `cta_click` (→ Meta InitiateCheckout) ·
-`pricing_view` (→ ViewContent) · `email_submit` (→ Lead). The browser Pixel and
-server CAPI share one `event_id` so Meta counts each conversion once.
+`pricing_view` (→ ViewContent) · `email_submit` (→ Lead). Browser Pixel and server
+CAPI share one `event_id` so Meta counts each conversion once.
