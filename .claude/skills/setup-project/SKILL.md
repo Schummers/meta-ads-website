@@ -1,11 +1,11 @@
 ---
 name: setup-project
-description: Use when starting a new fake-door landing test from the fakedoor-kit template, or when the user says "setup project", "/setup-project", "new project", "set up my project", "define the content", or wants to go from a product idea to a live landing page. The agent does all the work (install, build, deploy); the human only answers questions and pastes API keys.
+description: Use when starting a new fake-door landing test from the meta-ads-website template, or when the user says "setup project", "/setup-project", "new project", "set up my project", "define the content", or wants to go from a product idea to a live landing page. The agent does all the work (install, build, deploy); the human only answers questions and pastes API keys.
 ---
 
 # setup-project
 
-Drive a fresh `fakedoor-kit` clone from a product idea to a content-complete,
+Drive a fresh `meta-ads-website` clone from a product idea to a content-complete,
 shippable landing test. **You (the agent) execute every command and edit.** The
 human is possibly non-technical: ask them questions, never tell them to run
 commands. Work the phases IN ORDER; make a todo per phase.

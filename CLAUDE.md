@@ -1,6 +1,6 @@
-# fakedoor-kit — agent instructions
+# meta-ads-website — agent instructions
 
-This repo is a **fake-door landing-page test** built from the `fakedoor-kit`
+This repo is a **fake-door landing-page test** built from the `meta-ads-website`
 template. The human may be non-technical: **you (the agent) execute every step.**
 They only answer questions and paste API keys when asked.
 

@@ -1,4 +1,4 @@
-# fakedoor-kit
+# meta-ads-website
 
 A reusable starter for **fake-door landing-page tests**: validate demand for a
 product idea by shipping a landing page with a waitlist, running ads to it, and
