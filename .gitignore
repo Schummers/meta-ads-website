@@ -44,3 +44,11 @@ next-env.d.ts
 .node_modules_corrupt_*/
 .package-lock.corrupt
 .env.local
+
+# outillage local, hors template : skills tierces (npx skills add), config MCP locale
+/.agents/
+/.claude/skills/*
+!/.claude/skills/setup-project
+/skills-lock.json
+/.mcp.json
+/.playwright-mcp/
